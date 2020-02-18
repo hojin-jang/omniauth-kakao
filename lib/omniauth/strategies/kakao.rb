@@ -1,17 +1,18 @@
+# frozen_string_literal: true
+
 require 'omniauth-oauth2'
 
 module OmniAuth
   module Strategies
     class Kakao < OmniAuth::Strategies::OAuth2
-      DEFAULT_REDIRECT_PATH = "/oauth"
+      DEFAULT_REDIRECT_PATH = '/oauth'
 
       option :name, 'kakao'
 
-      option :client_options, {
-        :site => 'https://kauth.kakao.com',
-        :authorize_path => '/oauth/authorize',
-        :token_url => '/oauth/token',
-      }
+      option :client_options,
+             site: 'https://kauth.kakao.com',
+             authorize_path: '/oauth/authorize',
+             token_url: '/oauth/token'
 
       uid { raw_info['id'].to_s }
 
@@ -19,12 +20,12 @@ module OmniAuth
         {
           'name' => raw_properties['nickname'],
           'image' => raw_properties['thumbnail_image'],
-          'email' => raw_info['kaccount_email'],
+          'email' => raw_info['kaccount_email']
         }
       end
 
       extra do
-        {'properties' => raw_properties}
+        { 'properties' => raw_properties }
       end
 
       def initialize(app, *args, &block)
@@ -36,9 +37,10 @@ module OmniAuth
         options[:callback_url] || (full_host + script_name + callback_path)
       end
 
-    private
+      private
+
       def raw_info
-        @raw_info ||= access_token.get('https://kapi.kakao.com/v1/user/me', {}).parsed || {}
+        @raw_info ||= access_token.get('https://kapi.kakao.com/v2/user/me', {}).parsed || {}
       end
 
       def raw_properties
